@@ -23,7 +23,7 @@ public class NewEventListenerServiceImpl implements INewEventListenerService{
 	//batch size of the new files events
 	@Value("${new.file.events.batch.size}")
 	int newEventBatchSize;
-	
+
 	@Autowired
 	CommonUtil commonUtil;
 
@@ -41,10 +41,10 @@ public class NewEventListenerServiceImpl implements INewEventListenerService{
 		while (newEventBatchSize > eventCounter) {
 			//Iterate every page to pick up new file events.
 			ChangeList changes = service.changes().list(pageToken).execute();
-			            
+
 			for (Change change : changes.getChanges()) {
 				// Process the change found
-				System.out.println("\n Change found for file/folder: " + change.getFileId() + "\t Change time: " + change.getTime());
+				System.out.println("\nChange found for file/folder: " + change.getFileId() + "\t Change time: " + change.getTime());
 				eventCounter++;
 				FileMetadata fileMetadata = fetchFileMetaData(service, change.getFileId());
 				fileMetadataList.add(fileMetadata);
@@ -59,7 +59,7 @@ public class NewEventListenerServiceImpl implements INewEventListenerService{
 				//Start again from saved start page token
 				pageToken = savedStartPageToken;
 			}
-			
+
 			try {
 				//5 second sleep between each API call, so that the system doesn't keep polling the Google Drive API and hit the quota.
 				Thread.sleep(5000);
@@ -68,13 +68,15 @@ public class NewEventListenerServiceImpl implements INewEventListenerService{
 			}
 		}
 		//Write the metadata into file once the configured batch size is reached.
-		commonUtil.writeMetadataIntoFile(fileMetadataList);
+		commonUtil.writeMetadataListIntoFile(fileMetadataList);
+		//Download the new file and place into configured location.
+		downloadAllNewFiles(service, fileMetadataList);
 	}
 
 	private FileMetadata fetchFileMetaData(Drive service, String fileId) throws IOException {
-		
+
 		FileMetadata fileMetadata = new FileMetadata();
-		
+
 		//retrieve all the file details from Google Drive
 		File file = service.files().get(fileId)
 				.setFields("id, name, createdTime, modifiedTime, size, fileExtension")
@@ -89,5 +91,15 @@ public class NewEventListenerServiceImpl implements INewEventListenerService{
 
 		return fileMetadata;
 	}
-	
+
+	private void downloadAllNewFiles(Drive service, List<FileMetadata> fileMetadataList){
+		fileMetadataList.forEach(fileMetadata -> {
+			try {
+				commonUtil.downloadFileIntoLocal(service, fileMetadata);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		});
+	}
+
 }
