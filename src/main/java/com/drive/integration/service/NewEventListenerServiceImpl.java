@@ -42,7 +42,7 @@ public class NewEventListenerServiceImpl implements INewEventListenerService{
 		List<FileMetadata> fileMetadataList = new ArrayList<>();
 		int eventCounter = 0;
 
-		while (newEventBatchSize > eventCounter) {
+		while (true) {
 			//Iterate every page to pick up new file events.
 			ChangeList changes = service.changes().list(pageToken).execute();
 
@@ -53,6 +53,11 @@ public class NewEventListenerServiceImpl implements INewEventListenerService{
 				FileMetadata fileMetadata = fetchFileMetaData(service, change.getFileId());
 				fileMetadataList.add(fileMetadata);
 				System.out.println("JSON: " + new Gson().toJson(fileMetadata));
+				if(newEventBatchSize == eventCounter) {
+					writeTheFiles(service, fileMetadataList);
+					eventCounter = 0;
+					fileMetadataList.clear();
+				}
 			}
 			if (changes.getNewStartPageToken() != null) {
 				// Last page, save this token for the next polling interval
@@ -71,7 +76,7 @@ public class NewEventListenerServiceImpl implements INewEventListenerService{
 				e.printStackTrace();
 			}
 		}
-		writeTheFiles(service, fileMetadataList);
+		
 	}
 
 	private FileMetadata fetchFileMetaData(Drive service, String fileId) throws IOException {
@@ -93,6 +98,7 @@ public class NewEventListenerServiceImpl implements INewEventListenerService{
 		return fileMetadata;
 	}
 	
+	//Write Metadata into local and download file from Google Drive to local.
 	public void writeTheFiles(Drive service, List<FileMetadata> fileMetadataList) {
 		
 		long startTime = System.currentTimeMillis();
