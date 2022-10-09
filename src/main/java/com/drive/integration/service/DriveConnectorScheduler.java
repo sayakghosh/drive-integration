@@ -43,7 +43,7 @@ public class DriveConnectorScheduler {
         //Fetch all existing documents in Google Drive
         allDocumentListService.fetchAllDocuments(service);
         
-        //New events listener method
+        //Listen to any new file events and write into a local file
         newEventListenerService.newFileEventProcessor(service);
 	}
 }

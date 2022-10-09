@@ -13,11 +13,12 @@ import com.google.gson.Gson;
 @Component
 public class CommonUtil {
 	
-	public void writeIntoFile(List<FileMetadata> fileMetadataList){
+	public void writeMetadataIntoFile(List<FileMetadata> fileMetadataList){
 		try {
 			File myObj = new File(Constant.DEFAULT_FILE_LOCATION);
 			FileWriter fr = new FileWriter(myObj, true);
 			
+			//Create a new file if it does not exist
 			if (myObj.createNewFile()) {
 				System.out.println("File created: " + myObj.getName());
 			} else {
@@ -25,6 +26,7 @@ public class CommonUtil {
 			}
 			
 			System.out.println("Writing the metadata JSON into file.");
+			//Write JSON metadata list to a file
 			fileMetadataList.forEach(fileMetadata -> writeJsonIntoFile(fr, fileMetadata));
 			
 			fr.close();
@@ -37,6 +39,7 @@ public class CommonUtil {
 	public void writeJsonIntoFile(FileWriter fr, FileMetadata fileMetadata) {
 		
 		try {
+			//Write each JSON object to the file
 			fr.write(new Gson().toJson(fileMetadata));
 		} catch (IOException e) {
 			e.printStackTrace();

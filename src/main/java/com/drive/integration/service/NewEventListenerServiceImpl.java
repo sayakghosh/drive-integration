@@ -32,19 +32,19 @@ public class NewEventListenerServiceImpl implements INewEventListenerService{
 
 		System.out.println("\n Listening for new events.");
 		StartPageToken response = service.changes().getStartPageToken().execute();
-		// [END fetchStartPageToken]
+		//Save the start page
 		String savedStartPageToken = response.getStartPageToken();
 		String pageToken = savedStartPageToken;
 		List<FileMetadata> fileMetadataList = new ArrayList<>();
 		int eventCounter = 0;
 
 		while (newEventBatchSize > eventCounter) {
-			//System.out.println("Start token: " + response.getStartPageToken());
+			//Iterate every page to pick up new file events.
 			ChangeList changes = service.changes().list(pageToken).execute();
-			//List<Change> changeStore = new ArrayList<>();	            
+			            
 			for (Change change : changes.getChanges()) {
 				// Process the change found
-				System.out.println("Change found for file/folder: " + change.getFileId() + "\t Change time: " + change.getTime());
+				System.out.println("\n Change found for file/folder: " + change.getFileId() + "\t Change time: " + change.getTime());
 				eventCounter++;
 				FileMetadata fileMetadata = fetchFileMetaData(service, change.getFileId());
 				fileMetadataList.add(fileMetadata);
@@ -56,15 +56,19 @@ public class NewEventListenerServiceImpl implements INewEventListenerService{
 			}
 			pageToken = changes.getNextPageToken();
 			if (pageToken == null) {
+				//Start again from saved start page token
 				pageToken = savedStartPageToken;
 			}
+			
 			try {
+				//5 second sleep between each API call, so that the system doesn't keep polling the Google Drive API and hit the quota.
 				Thread.sleep(5000);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
 		}
-		commonUtil.writeIntoFile(fileMetadataList);
+		//Write the metadata into file once the configured batch size is reached.
+		commonUtil.writeMetadataIntoFile(fileMetadataList);
 	}
 
 	private FileMetadata fetchFileMetaData(Drive service, String fileId) throws IOException {
