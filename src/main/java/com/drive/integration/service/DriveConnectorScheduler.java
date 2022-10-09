@@ -24,11 +24,14 @@ public class DriveConnectorScheduler {
 	@Autowired
 	IAllDocumentListService allDocumentListService;
 	
+	@Autowired
+	INewEventListenerService newEventListenerService;
+	
 	private static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
 	
 	private static final String APPLICATION_NAME = "Oslash Test Project";
-
-	@Scheduled(cron = Constant.DEFAULT_CRON_EXPRESSION, zone = Constant.UTC)
+	
+	@Scheduled(fixedDelay = Constant.DEFAULT_FIXED_DELAY)
 	public void fetchAllFiles() throws IOException, GeneralSecurityException {
 		
 		// Build a new authorized API client service.
@@ -39,5 +42,8 @@ public class DriveConnectorScheduler {
         
         //Fetch all existing documents in Google Drive
         allDocumentListService.fetchAllDocuments(service);
+        
+        //New events listener method
+        newEventListenerService.newFileEventProcessor(service);
 	}
 }

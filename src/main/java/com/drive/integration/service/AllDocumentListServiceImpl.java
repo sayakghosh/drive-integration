@@ -25,8 +25,7 @@ public class AllDocumentListServiceImpl implements IAllDocumentListService {
         } else {
         	for (File file : allFiles) {
         		System.out.println("File Name: " + file.getName() + "\t Created Date: " + file.getCreatedTime() 
-        		+ "\t Last Modified Date: " + file.getModifiedTime());
-        		
+        		+ "\t Last Modified Date: " + file.getModifiedTime() + "\t File extension: " + file.getFileExtension());
         	}
         }
 	}
@@ -35,7 +34,7 @@ public class AllDocumentListServiceImpl implements IAllDocumentListService {
 		
 		//retrieve all the file details from Google Drive
 		return service.files().list().setPageSize(fileFetchBatchSize)
-				.setFields("nextPageToken, files(name, createdTime, modifiedTime)")
+				.setFields("nextPageToken, files(name, createdTime, modifiedTime, fileExtension)")
 				.execute().getFiles();
 	}
 }

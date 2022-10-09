@@ -26,7 +26,7 @@ public class GoogleDriveCredentials {
     private JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
 
     //Scope of the Application - used to access Google Drive features
-    private List<String> SCOPES = Collections.singletonList(DriveScopes.DRIVE_METADATA_READONLY);
+    private List<String> SCOPES = Collections.singletonList(DriveScopes.DRIVE_READONLY);
     
     //Google generated credentials json file path
     private String CREDENTIALS_FILE_PATH = "/credentials.json";
