@@ -34,7 +34,7 @@ public class NewEventListenerServiceImpl implements INewEventListenerService{
 	@Override
 	public void newFileEventProcessor(Drive service) throws IOException {
 
-		System.out.println("\n Listening for new events.");
+		System.out.println("\nListening for new events.");
 		StartPageToken response = service.changes().getStartPageToken().execute();
 		//Save the start page
 		String savedStartPageToken = response.getStartPageToken();
@@ -71,12 +71,7 @@ public class NewEventListenerServiceImpl implements INewEventListenerService{
 				e.printStackTrace();
 			}
 		}
-		long startTime = System.currentTimeMillis();
-		//Write the metadata into file once the configured batch size is reached.
-		commonUtil.writeMetadataListIntoFile(fileMetadataList);
-		//Download the new file and place into configured location.
-		downloadAllNewFiles(service, fileMetadataList);		
-		logger.info("Jobs successfully completed within {}ms", System.currentTimeMillis() - startTime);
+		writeTheFiles(service, fileMetadataList);
 	}
 
 	private FileMetadata fetchFileMetaData(Drive service, String fileId) throws IOException {
@@ -97,8 +92,18 @@ public class NewEventListenerServiceImpl implements INewEventListenerService{
 
 		return fileMetadata;
 	}
+	
+	public void writeTheFiles(Drive service, List<FileMetadata> fileMetadataList) {
+		
+		long startTime = System.currentTimeMillis();
+		//Write the metadata into file once the configured batch size is reached.
+		commonUtil.writeMetadataListIntoFile(fileMetadataList);
+		//Download the new file and place into configured location.
+		downloadAllNewFiles(service, fileMetadataList);		
+		logger.info("Jobs successfully completed within {}ms", System.currentTimeMillis() - startTime);
+	}
 
-	private void downloadAllNewFiles(Drive service, List<FileMetadata> fileMetadataList){
+	private void downloadAllNewFiles(Drive service, List<FileMetadata> fileMetadataList) {
 		fileMetadataList.forEach(fileMetadata -> {
 			try {
 				commonUtil.downloadFileIntoLocal(service, fileMetadata);
