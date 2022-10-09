@@ -6,14 +6,14 @@
 - After all the existing files are fetched, the listener is started.
 - The listener listens for any file changes in the Drive.
 - Once a change is found, the file's metadata is stored in an ArrayList.
-- The metadata of the new files are accumulated till they reach a configured threshold(new.file.events.batch.size).
-- Once the threshold is reached, all the accumulated metadata is written into a file(location configurable). The files are then downloaded into a configured folder aswell.
+- The metadata of the new files are accumulated till they reach a configured threshold - `new.file.events.batch.size`.
+- Once the threshold is reached, all the accumulated metadata is written into a file(location is configurable). The files are then downloaded into a configured folder aswell.
 
 ## FUTURE IMPROVEMENTS
 
 - Add support for multiple JVMs.
 - Add support for application to resume from last checkpoint. This is to be done to minimize the impact of a JVM crash.
-- Integrate with Google OAuth to add support without using credentials.json file.
+- Integrate with Google OAuth to add support without using `credentials.json` file.
 
 ## STEPS TO RUN THE APPLICATION LOCALLY
 
@@ -30,5 +30,5 @@ all.file.fetch.batch.size=1000
 
 new.file.events.batch.size=10
  ```
- - Update the METADATA_FILE_LOCATION and FILES_DOWNLOAD_LOCATION in Constant.java, if required.
+ - Update the `METADATA_FILE_LOCATION` and `FILES_DOWNLOAD_LOCATION` variables in `Constant.java`, if required.
  - Run as a Java/SpringBoot Application.
