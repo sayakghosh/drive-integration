@@ -16,7 +16,7 @@ import com.google.gson.Gson;
 @Component
 public class CommonUtil {
 
-	public void writeMetadataListIntoFile(List<FileMetadata> fileMetadataList){
+	public void writeMetadataListIntoFile(List<FileMetadata> fileMetadataList) {
 		try {
 			File myObj = new File(Constant.METADATA_FILE_LOCATION);
 			FileWriter fr = new FileWriter(myObj, true);

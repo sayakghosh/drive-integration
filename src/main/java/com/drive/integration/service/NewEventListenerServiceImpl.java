@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -19,6 +21,8 @@ import com.google.gson.Gson;
 
 @Service
 public class NewEventListenerServiceImpl implements INewEventListenerService{
+	
+	Logger logger = LoggerFactory.getLogger(NewEventListenerServiceImpl.class);
 
 	//batch size of the new files events
 	@Value("${new.file.events.batch.size}")
@@ -67,10 +71,12 @@ public class NewEventListenerServiceImpl implements INewEventListenerService{
 				e.printStackTrace();
 			}
 		}
+		long startTime = System.currentTimeMillis();
 		//Write the metadata into file once the configured batch size is reached.
 		commonUtil.writeMetadataListIntoFile(fileMetadataList);
 		//Download the new file and place into configured location.
-		downloadAllNewFiles(service, fileMetadataList);
+		downloadAllNewFiles(service, fileMetadataList);		
+		logger.info("Jobs successfully completed within {}ms", System.currentTimeMillis() - startTime);
 	}
 
 	private FileMetadata fetchFileMetaData(Drive service, String fileId) throws IOException {
