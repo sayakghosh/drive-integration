@@ -3,6 +3,7 @@ package com.drive.integration.service;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ForkJoinPool;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +28,9 @@ public class NewEventListenerServiceImpl implements INewEventListenerService{
 	//batch size of the new files events
 	@Value("${new.file.events.batch.size}")
 	int newEventBatchSize;
+	
+	@Value("${fork.join.pool.batch.size}")
+	int forkJoinPoolBatchSize;
 
 	@Autowired
 	CommonUtil commonUtil;
@@ -110,13 +114,32 @@ public class NewEventListenerServiceImpl implements INewEventListenerService{
 	}
 
 	private void downloadAllNewFiles(Drive service, List<FileMetadata> fileMetadataList) {
-		fileMetadataList.forEach(fileMetadata -> {
-			try {
-				commonUtil.downloadFileIntoLocal(service, fileMetadata);
-			} catch (IOException e) {
-				e.printStackTrace();
+//		fileMetadataList.forEach(fileMetadata -> {
+//			try {
+//				commonUtil.downloadFileIntoLocal(service, fileMetadata);
+//			} catch (IOException e) {
+//				e.printStackTrace();
+//			}
+//		});
+
+		ForkJoinPool forkJoinPool = null; 
+		try {
+			forkJoinPool = new ForkJoinPool(forkJoinPoolBatchSize);
+			forkJoinPool.submit(() ->
+			fileMetadataList.parallelStream().forEach(fileMetadata -> {
+				try {
+					commonUtil.downloadFileIntoLocal(service, fileMetadata);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			})).get();
+		} catch (Exception ex) {
+			ex.printStackTrace();	
+		} finally {
+			if (forkJoinPool != null) {
+				forkJoinPool.shutdown();
 			}
-		});
+		}
 	}
 
 }
