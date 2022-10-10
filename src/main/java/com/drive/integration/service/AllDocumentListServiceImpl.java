@@ -32,7 +32,7 @@ public class AllDocumentListServiceImpl implements IAllDocumentListService {
 	
 	private List<File> fetchFilesList(Drive service) throws IOException {
 		
-		//retrieve all the files metadata from Google Drive
+		//Retrieve all the files metadata from Google Drive
 		return service.files().list().setPageSize(fileFetchBatchSize)
 				.setFields("nextPageToken, files(name, createdTime, modifiedTime, fileExtension)")
 				.execute().getFiles();

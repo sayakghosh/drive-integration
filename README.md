@@ -7,8 +7,9 @@
 - The listener listens for any file changes in the Drive.
 - Once a change is found, the file's metadata is stored in an ArrayList.
 - The changes API is polled every 5 seconds, so that the API quota is not reached in a hurry.
-- The metadata of the new files are accumulated till they reach a configured threshold - `new.file.events.batch.size`.
-- Once the threshold is reached, all the accumulated metadata is written into a file(location is configurable). The files are then downloaded into a configured folder aswell.
+- The metadata of the new files are accumulated till they reach a configured threshold property - `new.file.events.batch.size`.
+- Once the threshold is reached, all the accumulated metadata is written into a file(location is configurable). The files are then downloaded into a configured folder as well.
+- The files are downloaded in a concurrent manner. The level of concurrency/parallelism is controlled by the configurable property - `fork.join.pool.size`.
 
 ## FUTURE IMPROVEMENTS
 
@@ -30,6 +31,8 @@
 all.file.fetch.batch.size=1000
 
 new.file.events.batch.size=10
+
+fork.join.pool.size=3
  ```
  - Update the `METADATA_FILE_LOCATION` and `FILES_DOWNLOAD_LOCATION` variables in `Constant.java`, if required.
  - Run as a Java/SpringBoot Application.

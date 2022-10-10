@@ -31,7 +31,8 @@ public class DriveConnectorScheduler {
 	
 	private static final String APPLICATION_NAME = "Oslash Test Project";
 	
-	@Scheduled(fixedDelay = Constant.DEFAULT_FIXED_DELAY)
+	//The integration process is scheduled to be triggered 20 seconds(based on the variable) after the start of the application. 
+	@Scheduled(fixedDelay = Constant.DEFAULT_FIXED_DELAY, initialDelay = Constant.DEFAULT_FIXED_DELAY)
 	public void fetchAllFiles() throws IOException, GeneralSecurityException {
 		
 		// Build a new authorized API client service.

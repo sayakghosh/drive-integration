@@ -25,12 +25,13 @@ public class NewEventListenerServiceImpl implements INewEventListenerService{
 	
 	Logger logger = LoggerFactory.getLogger(NewEventListenerServiceImpl.class);
 
-	//batch size of the new files events
+	//Batch size of the new files events.
 	@Value("${new.file.events.batch.size}")
 	int newEventBatchSize;
 	
-	@Value("${fork.join.pool.batch.size}")
-	int forkJoinPoolBatchSize;
+	//Number of threads to be used.
+	@Value("${fork.join.pool.size}")
+	int forkJoinPoolSize;
 
 	@Autowired
 	CommonUtil commonUtil;
@@ -124,7 +125,8 @@ public class NewEventListenerServiceImpl implements INewEventListenerService{
 
 		ForkJoinPool forkJoinPool = null; 
 		try {
-			forkJoinPool = new ForkJoinPool(forkJoinPoolBatchSize);
+			//Initialize number of threads to fork for the download.
+			forkJoinPool = new ForkJoinPool(forkJoinPoolSize);
 			forkJoinPool.submit(() ->
 			fileMetadataList.parallelStream().forEach(fileMetadata -> {
 				try {
