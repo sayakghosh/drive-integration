@@ -38,3 +38,11 @@ fork.join.pool.size=3
  - Run as a Java/SpringBoot Application.
 
 ## BENCHMARKS
+
+| No. of Files | Batch Size | Parallelism | Avg. File Size  | Total Time |
+|--------------|------------|-------------|-----------------|------------|
+| 50           | 10         | 5           | 40KB            | 19 secs    |
+| 50           | 10         | 10          | 40KB            | 9 secs     |
+| 50           | 25         | 10          | 40KB            | 7 secs     |
+| 50           | 25         | 20          | 40KB            | 6 secs     |
+| 50           | 50         | 20          | 40KB            | 4 secs     |
